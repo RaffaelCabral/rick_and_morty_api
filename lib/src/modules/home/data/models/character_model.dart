@@ -10,7 +10,7 @@ class CharacterModel {
   final ApiReference origin;
   final ApiReference location;
   final String image;
-  final List<String> episode; // URLs dos episódios
+  final List<String> episode;
   final String url;
   final DateTime created;
 

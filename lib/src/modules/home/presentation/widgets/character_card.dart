@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty_api/src/modules/core/theme/app_colors.dart';
 import 'package:rick_and_morty_api/src/modules/core/theme/app_theme.dart';
@@ -23,15 +24,14 @@ class CharacterCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(
-                  character.image,
+                CachedNetworkImage(
+                  imageUrl: character.image,
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
-                  cacheWidth: _imageCacheSize,
-                  cacheHeight: _imageCacheSize,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
+                  memCacheWidth: _imageCacheSize,
+                  memCacheHeight: _imageCacheSize,
+                  placeholder: (context, url) {
                     return const ColoredBox(
                       color: AppColors.surfaceElevated,
                       child: Center(
@@ -43,7 +43,7 @@ class CharacterCard extends StatelessWidget {
                       ),
                     );
                   },
-                  errorBuilder: (_, __, ___) => const ColoredBox(
+                  errorWidget: (context, url, error) => const ColoredBox(
                     color: AppColors.surfaceElevated,
                     child: Icon(
                       Icons.person_off_outlined,

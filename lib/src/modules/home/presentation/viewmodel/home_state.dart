@@ -25,11 +25,12 @@ class HomeState extends Equatable {
     EpisodeModel? episode,
     List<CharacterModel>? characters,
     String? errorMessage,
+    bool clearEpisode = false,
     bool clearError = false,
   }) {
     return HomeState(
       status: status ?? this.status,
-      episode: episode ?? this.episode,
+      episode: clearEpisode ? null : (episode ?? this.episode),
       characters: characters ?? this.characters,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );

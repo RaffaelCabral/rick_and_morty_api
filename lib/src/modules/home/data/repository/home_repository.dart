@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:rick_and_morty_api/src/modules/core/connectivity/connectivity_service.dart';
 import 'package:rick_and_morty_api/src/modules/home/data/datasource/home_datasource.dart';
-import 'package:rick_and_morty_api/src/modules/home/data/local/home_local_datasource.dart';
+import 'package:rick_and_morty_api/src/modules/home/data/exceptions/home_exceptions.dart';
 import 'package:rick_and_morty_api/src/modules/home/data/models/character_model.dart';
 import 'package:rick_and_morty_api/src/modules/home/data/models/episode_model.dart';
 
@@ -13,38 +14,53 @@ abstract class HomeRepository {
 }
 
 class HomeRepositoryImpl implements HomeRepository {
-  HomeRepositoryImpl(this._remoteDatasource, this._localDatasource);
+  HomeRepositoryImpl(
+    this._remoteDataSource,
+    this._localDataSource,
+    this._connectivityService,
+  );
 
-  final HomeRemoteDatasource _remoteDatasource;
-  final HomeLocalDatasource _localDatasource;
+  final HomeDataSource _remoteDataSource;
+  final HomeLocalDataSource _localDataSource;
+  final ConnectivityService _connectivityService;
+
+  static const String _episodeNotCachedMessage =
+      'Ainda não temos dados salvos para esse episódio. '
+      'Conecte-se à internet e busque esse episódio uma vez para poder acessá-lo offline.';
 
   @override
   Future<EpisodeModel> getEpisode(int id) async {
+    if (!await _connectivityService.hasConnection) {
+      return _getCachedEpisodeOrThrow(id);
+    }
+
     try {
-      final episode = await _remoteDatasource.getEpisode(id);
-      await _localDatasource.saveEpisode(episode);
+      final episode = await _remoteDataSource.getEpisode(id);
+      await _localDataSource.saveEpisode(episode);
       return episode;
     } on DioException catch (e) {
       if (_isLikelyNetworkIssue(e)) {
-        final cached = await _localDatasource.getEpisodeById(id);
-        if (cached != null) return cached;
+        return _getCachedEpisodeOrThrow(id);
       }
-      rethrow;
+      throw mapDioExceptionToHomeException(e);
     }
   }
 
   @override
   Future<CharacterModel> getCharacter(int id) async {
+    if (!await _connectivityService.hasConnection) {
+      return _getCachedCharacterOrThrow(id);
+    }
+
     try {
-      final character = await _remoteDatasource.getCharacter(id);
-      await _localDatasource.saveCharacters([character]);
+      final character = await _remoteDataSource.getCharacter(id);
+      await _localDataSource.saveCharacters([character]);
       return character;
     } on DioException catch (e) {
       if (_isLikelyNetworkIssue(e)) {
-        final cached = await _localDatasource.getCharacterById(id);
-        if (cached != null) return cached;
+        return _getCachedCharacterOrThrow(id);
       }
-      rethrow;
+      throw mapDioExceptionToHomeException(e);
     }
   }
 
@@ -52,16 +68,35 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<List<CharacterModel>> getCharactersByIds(List<int> ids) async {
     if (ids.isEmpty) return [];
 
+    if (!await _connectivityService.hasConnection) {
+      return _localDataSource.getCharactersByIdsOrdered(ids);
+    }
+
     try {
-      final list = await _remoteDatasource.getCharactersByIds(ids);
-      await _localDatasource.saveCharacters(list);
+      final list = await _remoteDataSource.getCharactersByIds(ids);
+      await _localDataSource.saveCharacters(list);
       return list;
     } on DioException catch (e) {
       if (_isLikelyNetworkIssue(e)) {
-        return _localDatasource.getCharactersByIdsOrdered(ids);
+        return _localDataSource.getCharactersByIdsOrdered(ids);
       }
-      rethrow;
+      throw mapDioExceptionToHomeException(e);
     }
+  }
+
+  Future<EpisodeModel> _getCachedEpisodeOrThrow(int id) async {
+    final cached = await _localDataSource.getEpisodeById(id);
+    if (cached != null) return cached;
+    throw HomeOfflineCacheException(_episodeNotCachedMessage);
+  }
+
+  Future<CharacterModel> _getCachedCharacterOrThrow(int id) async {
+    final cached = await _localDataSource.getCharacterById(id);
+    if (cached != null) return cached;
+    throw HomeOfflineCacheException(
+      'Ainda não temos dados salvos para esse personagem. '
+      'Conecte-se à internet e busque esse personagem uma vez para poder acessá-lo offline.',
+    );
   }
 
   static bool _isLikelyNetworkIssue(DioException e) {

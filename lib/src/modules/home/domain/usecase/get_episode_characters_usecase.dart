@@ -19,9 +19,7 @@ class GetEpisodeCharactersUseCase {
         .toList();
     final characters = await _repository.getCharactersByIds(characterIds);
     final sortedByName = List<CharacterModel>.from(characters)
-      ..sort(
-        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-      );
+      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
     return (episode: episode, characters: sortedByName);
   }
