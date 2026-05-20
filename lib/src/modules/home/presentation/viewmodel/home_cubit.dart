@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_api/src/modules/home/data/local/home_offline_exceptions.dart';
 import 'package:rick_and_morty_api/src/modules/home/domain/usecase/get_episode_characters_usecase.dart';
 import 'package:rick_and_morty_api/src/modules/home/presentation/viewmodel/home_state.dart';
 
@@ -26,6 +27,13 @@ class HomeCubit extends Cubit<HomeState> {
           status: HomeStateStatus.success,
           episode: result.episode,
           characters: result.characters,
+        ),
+      );
+    } on OfflineCacheException catch (e) {
+      emit(
+        state.copyWith(
+          status: HomeStateStatus.failure,
+          errorMessage: e.message,
         ),
       );
     } on DioException catch (e) {

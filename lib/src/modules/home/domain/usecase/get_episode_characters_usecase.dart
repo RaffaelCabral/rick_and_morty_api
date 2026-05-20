@@ -18,8 +18,12 @@ class GetEpisodeCharactersUseCase {
         .map(extractCharacterIdFromUrl)
         .toList();
     final characters = await _repository.getCharactersByIds(characterIds);
+    final sortedByName = List<CharacterModel>.from(characters)
+      ..sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+      );
 
-    return (episode: episode, characters: characters);
+    return (episode: episode, characters: sortedByName);
   }
 
   int _parseEpisodeId(String rawInput) {
