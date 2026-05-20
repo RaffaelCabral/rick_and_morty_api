@@ -150,13 +150,20 @@ class _HomePageState extends State<HomePage> {
                   'Explore os personagens de cada episódio.\nDigite um número do episódio e toque em buscar.',
             );
           case HomeStateStatus.loading:
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text(
+                  SizedBox(
+                    width: 180,
+                    height: 180,
+                    child: Image.asset(
+                      'assets/gifs/rick_and_morty_api_loading_big.gif',
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
                     'Abrindo o portal...',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),

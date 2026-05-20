@@ -66,14 +66,20 @@ void main() {
       },
     );
 
-    testWidgets('estado loading exibe progress indicator', (tester) async {
+    testWidgets('estado loading exibe gif de portal', (tester) async {
       await _pumpHomePage(
         tester,
         cubit,
         const HomeState(status: HomeStateStatus.loading),
       );
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      final image = tester.widget<Image>(find.byType(Image));
+
+      expect(image.image, isA<AssetImage>());
+      expect(
+        (image.image as AssetImage).assetName,
+        'assets/gifs/rick_and_morty_api_loading.gif',
+      );
       expect(find.text('Abrindo o portal...'), findsOneWidget);
     });
 

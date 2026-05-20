@@ -32,13 +32,16 @@ class CharacterCard extends StatelessWidget {
                   memCacheWidth: _imageCacheSize,
                   memCacheHeight: _imageCacheSize,
                   placeholder: (context, url) {
-                    return const ColoredBox(
+                    return ColoredBox(
                       color: AppColors.surfaceElevated,
                       child: Center(
                         child: SizedBox(
                           width: 28,
                           height: 28,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: Image.asset(
+                            'assets/gifs/rick_and_morty_api_loading.gif',
+                            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                          ),
                         ),
                       ),
                     );
