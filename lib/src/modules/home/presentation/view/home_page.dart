@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(width: 10),
-            const Text('Rick and Morty'),
+            const Text('The Chaos Archive'),
           ],
         ),
       ),
