@@ -1,17 +1,10 @@
-# rick_and_morty_api
+# Rick and Morty API
+Aplicativo Flutter que consome a API pública de Rick and Morty para buscar episódios e listar os personagens relacionados. O projeto usa cache local para permitir consulta offline de episódios já carregados.
 
-A new Flutter project.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Funcionalidades
+- Buscar personagens por número do episódio.
+- Exibir informações do episódio selecionado.
+- Listar personagens em cards com imagem, nome, espécie e status.
+- Salvar episódios e personagens em cache local com Drift.
+- Usar dados offline quando não houver conexão.
