@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Paleta inspirada no universo Rick and Morty (portal + sci-fi).
 abstract final class AppColors {
   static const Color portalGreen = Color(0xFF42D9C8);
   static const Color portalGreenDark = Color(0xFF1A9E8F);
